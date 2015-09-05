@@ -4,6 +4,11 @@ module.exports = function(robot) {
     robot.hear(/shit/i, function(res) {
         res.send("Shit!")
     });
+
+    robot.respond(/current url/i, function (res) {
+        res.send(restaurantsJSONURL);
+    });
+
     robot.respond(/list foods/i, function(res) {
         http.get(restaurantsJSONURL, function(resJSON) {
             var body = '';
