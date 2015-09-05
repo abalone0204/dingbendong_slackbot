@@ -10,7 +10,7 @@ module.exports = function(robot) {
         res.send(restaurantsJSONURL);
     });
 
-    robot.respond(/list foods/i, function(res) {
+    robot.respond(/foods/i, function(res) {
         var result = ""
         data.forEach(function(food, i) {
             result += (i + 1) + ". " + food.name + "\n";
