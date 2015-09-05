@@ -6,9 +6,11 @@ module.exports = function(robot) {
             "============",
             "指令一覽表:",
             "`foods`: 列出所有餐廳名稱及稱號",
-            "`show fodd 編號or名稱` : 列出餐廳資訊"
+            "`show fodd 編號or名稱` : 列出餐廳資訊",
+            "`menu` : 看最近的點餐"
         ];
     robot.respond(/info/i, function(res) {
         res.send(commands.join("\n"));
     })
 }
+
