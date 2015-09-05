@@ -1,7 +1,7 @@
 var http = require('http');
-var restaurantsJSONURL = (process.env.URL || "http://localhost:3000")+"/restaurants.json"
+var restaurantsJSONURL = (process.env.URL || "http://localhost:3001") + "/restaurants.json"
 module.exports = function(robot) {
-    robot.hear(/shit/i, function (res) {
+    robot.hear(/shit/i, function(res) {
         res.send("Shit!")
     });
     robot.respond(/list foods/i, function(res) {
@@ -13,10 +13,12 @@ module.exports = function(robot) {
             resJSON.on('end', function() {
                 var fbResponse = JSON.parse(body);
                 res.reply("Got a response: ");
-                fbResponse.forEach(function (restaurant) {
-                    res.send(restaurant.name);    
+                fbResponse.forEach(function(restaurant) {
+                    res.send(restaurant.name);
                 })
             });
-        })
+        }).on('error', function(e) {
+            res.send("Got an error: ", e);
+        });
     });
 }
