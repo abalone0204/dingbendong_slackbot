@@ -17,26 +17,24 @@ module.exports = function(robot) {
     });
 
     robot.respond(/list foods/i, function(res) {
-        data.forEach(function (food) {
-            res.send(food.name);
+        data.forEach(function (food, i) {
+            res.send((i+1)+". "+food.name);
         })
-        // http.get(restaurantsJSONURL, function(resJSON) {
-        //     var body = '';
-        //     resJSON.on('data', function(chunk) {
-        //         body += chunk;
-        //     });
-        //     resJSON.on('end', function() {
-        //         var fbResponse = JSON.parse(body);
-        //         res.reply("Got a response: ");
-        //         res.end(function () {
-        //             // body... 
-        //         })
-        //         fbResponse.forEach(function(restaurant) {
-        //             res.send(restaurant.name);
-        //         })
-        //     });
-        // }).on('error', function(e) {
-        //     res.send("Got an error: ", e);
-        // });
     });
+
+    robot.respond(/show food (\d+)/, function (res) {
+        var restIndex = res.match[1]-1;
+        var target = data[restIndex]
+        if (target) {
+            res.send("餐廳名稱: "+target.name);
+            res.send("電話: "+target.phone);
+            if (target.introduction) {
+                res.send("簡介: "+ target.introduction);
+            };
+            res.send("菜單");
+            res.send(target.filepicker_url);
+        }else {
+            res.send("404 找不到你要的餐廳 哭哭喔 :crydenny:")
+        };
+    })
 }
