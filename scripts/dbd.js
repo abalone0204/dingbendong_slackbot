@@ -4,8 +4,10 @@ module.exports = function(robot) {
     robot.hear(/shit/i, function(res) {
         res.send("Shit!")
     });
-
-    robot.respond(/current url/i, function (res) {
+    robot.hear(/dbd/i ,function (res) {
+        res.send("有人叫me嗎?");
+    })
+    robot.respond(/url/i, function (res) {
         res.send(restaurantsJSONURL);
     });
 
