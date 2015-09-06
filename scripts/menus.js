@@ -1,22 +1,70 @@
 var http = require('http');
-var menusJSONURL = (process.env.URL || "http://localhost:3000") + "/menus.json";
+var defaultURL = process.env.URL || "http://localhost:3000/";
+var menusJSONURL = defaultURL + "/menus.json";
+
 var menusJSON;
 
 module.exports = function(robot) {
+    robot.respond(/bill/i, function(res) {
+        updateJSON(robot, menusJSONURL, function() {
+            var latestMenuId = menusJSON.
+            filter(function(menu) {
+                return menu.expired === true;
+            }).
+            reduce(function(curr, acc) {
+                if (new Date(curr.raw_end_time) < new Date(acc.raw_end_time)) {
+                    return acc;
+                } else {
+                    return curr;
+                }
+            }).id;
+
+            var billJSONURL = defaultURL + "/menus/" + latestMenuId + "/bill.json"
+
+            robot.http(billJSONURL)
+                .get()(function(err, response, body) {
+                    var billJSON = JSON.parse(body)
+                    var result = displayOrder(billJSON)
+                    res.send(result);
+                });
+
+        });
+    });
     robot.respond(/menu/i, function(res) {
-        updateMenu(robot, menusJSONURL, function() {
+        updateJSON(robot, menusJSONURL, function() {
             var target = menusJSON.
             filter(function(menu) {
                 return menu.expired !== true;
             })[0];
             var result = displayMenu(target);
             res.send(result);
+        });
+    })
+    robot.respond(/menus/i, function(res) {
+        updateJSON(robot, menusJSONURL, function() {
+            var targets = menusJSON.
+            filter(function(menu) {
+                return menu.expired !== true;
+            })
+            var result = displayMenus(targets);
+            res.send(result);
         })
-
+    })
+    robot.respond(/show menu (\d+)/i, function(res) {
+        updateJSON(robot, menusJSONURL, function() {
+            var menuID = parseInt(res.match[1]);
+            var target = menusJSON.
+            filter(function(menu) {
+                return menu.id === menuID;
+            })[0]
+            var result = displayMenu(target);
+            res.send(result);
+        })
     })
 }
 
-function updateMenu(robot, url, callback) {
+
+function updateJSON(robot, url, callback) {
     robot.http(url)
         .get()(function(err, res, body) {
             menusJSON = JSON.parse(body)
@@ -36,6 +84,53 @@ function displayMenu(target) {
 
     } else {
         result.push("目前沒有anyone在進行DBD的動作")
+    };
+    return result.join("\n");
+}
+
+function displayMenus(targets) {
+
+}
+
+function displayOrder(billJSON) {
+    var result = [];
+    if (billJSON.id) {
+        result.push("訂單編號 : " + billJSON.id);
+        result.push("訂餐DRI :" + billJSON.user.name);
+        result.push("餐廳 : " + billJSON.restaurant_name);
+        result.push("");
+        billJSON.orders.forEach(function(order) {
+            var orderStr = ""
+            orderStr += order.ordere_name + " ";
+            orderStr += order.food_name + " ";
+            orderStr += order.price + " ";
+            orderStr += order.has_paid ? "尚未付款" : "已付款";
+            result.push(orderStr)
+        })
+        var total = billJSON.orders.
+        map(function (order) {
+            return order.price;
+        }).
+        reduce(function(prev, curr) {
+            curr += prev;
+            return curr;
+        },0)
+        var residual = billJSON.orders.
+        filter(function (order) {
+            return order.has_paid === false;
+        }).map(function (order) {
+            return order.price;
+        }).
+        reduce(function (prev, curr) {
+            curr += prev;
+            return curr;
+        }, 0)
+        result.push("");
+        result.push("總計 : "+total);
+        result.push("目前還缺多少錢 : "+residual);
+        result.push("網頁版連結 : "+defaultURL+"menus/"+billJSON.id+"/bill");
+    } else {
+        result.push("目前沒有點菜單需要結帳")
     };
     return result.join("\n");
 }
