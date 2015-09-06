@@ -4,7 +4,7 @@ var menusJSON;
 
 module.exports = function(robot) {
     robot.respond(/menu/i, function(res) {
-        updateMenu(menusJSONURL, function() {
+        updateMenu(robot, menusJSONURL, function() {
             var target = menusJSON.
             filter(function(menu) {
                 return menu.expired !== true;
@@ -16,18 +16,12 @@ module.exports = function(robot) {
     })
 }
 
-function updateMenu(url, callback) {
-    http.get(url, function (response) {
-        var body="";
-        response.on("data", function (chunk) {
-            body+=chunk;
-        })
-        response.on("end", function () {
+function updateMenu(robot, url, callback) {
+    robot.http(url)
+        .get()(function(err, res, body) {
             menusJSON = JSON.parse(body)
             callback();
-        })
-        
-    })
+        });
 }
 
 function displayMenu(target) {

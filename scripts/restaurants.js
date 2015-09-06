@@ -1,13 +1,13 @@
 var restaurantsJSONURL = (process.env.URL || "http://localhost:3000") + "/restaurants.json"
 var restaurantsJSON;
-var http =require('http');
+var http = require('http');
 module.exports = function(robot) {
     robot.respond(/resurl/i, function(res) {
         res.send(restaurantsJSONURL);
     });
 
     robot.respond(/foods/i, function(res) {
-        updateJSON(restaurantsJSONURL, function() {
+        updateJSON(robot, restaurantsJSONURL, function() {
             var result = ""
             restaurantsJSON.forEach(function(food, i) {
                 result += (i + 1) + ". " + food.name + "\n";
@@ -17,7 +17,7 @@ module.exports = function(robot) {
 
     });
     robot.respond(/show food (\d+)$/i, function(res) {
-        updateJSON(restaurantsJSONURL, function() {
+        updateJSON(robot, restaurantsJSONURL, function() {
             var restIndex = res.match[1] - 1;
             var target = restaurantsJSON[restIndex]
             var result = displayRestaurant(target);
@@ -26,7 +26,7 @@ module.exports = function(robot) {
 
     });
     robot.respond(/show food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
-        updateJSON(restaurantsJSONURL, function() {
+        updateJSON(robot, restaurantsJSONURL, function() {
             var result = "";
             var searchText = res.match[1];
             var matchedRestaurants = restaurantsJSON.filter(function(restaurant) {
@@ -43,18 +43,12 @@ module.exports = function(robot) {
 
 }
 
-function updateJSON(url, callback) {
-    http.get(url, function(response) {
-        var body = "";
-        response.on("data", function(chunk) {
-            body += chunk;
-        })
-        response.on("end", function() {
+function updateJSON(robot, url, callback) {
+    robot.http(url)
+        .get()(function(err, res, body) {
             restaurantsJSON = JSON.parse(body)
             callback();
-        })
-
-    })
+        });
 }
 
 
