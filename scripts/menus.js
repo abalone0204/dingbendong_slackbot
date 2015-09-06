@@ -40,6 +40,9 @@ module.exports = function(robot) {
             map(function(menu) {
                 return "訂單編號:"+menu.id+" "+menu.restaurant_name+" 還有"+menu.remain_time+"截止"
             })
+            if (result.length === 0) {
+                result.push("目前沒有人DBD喔!");
+            };
             res.send(result.join("\n"));
         })
     })
