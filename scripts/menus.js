@@ -46,6 +46,7 @@ module.exports = function(robot) {
             res.send(result.join("\n"));
         })
     })
+
     robot.respond(/menu/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
             var target = menusJSON.
@@ -116,6 +117,7 @@ function displayOrder(billJSON) {
             orderStr += order.food_name + " ";
             orderStr += order.price + " ";
             orderStr += order.has_paid ?  "已付款" : "尚未付款";
+            if (!order.has_paid) orderStr += " -> 找錢 "+order.change;
             result.push(orderStr)
         })
         var total = billJSON.orders.

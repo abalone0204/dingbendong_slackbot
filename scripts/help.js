@@ -2,7 +2,7 @@ var defaultURL = process.env.URL || "http://localhost:3000/";
 module.exports = function(robot) {
     var commands = [
             "dbder用法：",
-            "`@dbder 指令` : 使用DBD兒就是這麼簡單",
+            "`@dbder 指令` : 使喚DBD兒就是這麼簡單",
             "example: `@dbder foods`",
             "",
             "指令一覽表:",
