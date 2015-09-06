@@ -94,6 +94,7 @@ function displayMenus(targets) {
 
 function displayOrder(billJSON) {
     var result = [];
+    result.push("```");
     if (billJSON.id) {
         result.push("訂單編號 : " + billJSON.id);
         result.push("訂餐DRI :" + billJSON.user.name);
@@ -132,5 +133,6 @@ function displayOrder(billJSON) {
     } else {
         result.push("目前沒有點菜單需要結帳")
     };
+    result.push("```");
     return result.join("\n");
 }
