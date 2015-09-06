@@ -40,7 +40,6 @@ module.exports = function(robot) {
             map(function(menu) {
                 return "訂單編號:"+menu.id+" "+menu.restaurant_name+" 還有"+menu.remain_time+"截止"
             })
-            res.send("do")
             res.send(result.join("\n"));
         })
     })
@@ -113,7 +112,7 @@ function displayOrder(billJSON) {
             orderStr += order.ordere_name + " ";
             orderStr += order.food_name + " ";
             orderStr += order.price + " ";
-            orderStr += order.has_paid ? "尚未付款" : "已付款";
+            orderStr += order.has_paid ?  "已付款" : "尚未付款";
             result.push(orderStr)
         })
         var total = billJSON.orders.
