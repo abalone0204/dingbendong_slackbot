@@ -115,6 +115,9 @@ function displayOrder(billJSON) {
     map(function(orderName) {
         return {
             orderName: orderName,
+            count: orders.filter(function (order) {
+                return order.food_name === orderName;
+            }).length,
             price: orders.reduce(function (prev, curr) {
                 return curr.food_name === orderName ? curr : prev;
             }).price,
@@ -132,11 +135,7 @@ function displayOrder(billJSON) {
                 return curr;
             }, 0)
         }
-    }).
-    map(function (cObject) {
-        cObject.count = cObject.total/cObject.price
-        return cObject;
-    });
+    })
     console.log(totalClassify);
     var result = [];
     result.push("```");
