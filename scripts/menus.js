@@ -157,6 +157,7 @@ function displayOrder(billJSON) {
             orderStr += order.ordere_name + " ";
             orderStr += order.food_name + " ";
             orderStr += order.price + " ";
+            orderStr += order.note+ " ";
             orderStr += order.has_paid ? "已付款" : "尚未付款";
             if (!order.has_paid) orderStr += " -> 找錢 " + order.change;
             result.push(orderStr)
