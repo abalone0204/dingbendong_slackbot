@@ -38,7 +38,7 @@ module.exports = function(robot) {
             })
             var result = targets.
             map(function(menu) {
-                return "訂單編號:"+menu.id+" "+menu.restaurant_name+" 還有"+menu.remain_time+"截止"
+                return "訂單編號:" + menu.id + " " + menu.restaurant_name + " 還有" + menu.remain_time + "截止"
             })
             if (result.length === 0) {
                 result.push("目前沒有人DBD喔!");
@@ -57,7 +57,7 @@ module.exports = function(robot) {
             res.send(result);
         });
     })
-    
+
     robot.respond(/show menu (\d+)/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
             var menuID = parseInt(res.match[1]);
@@ -82,7 +82,7 @@ function updateJSON(robot, url, callback) {
 
 function displayMenu(target) {
     var result = [];
-    
+
     if (target) {
         result.push("```");
         result.push("訂單編號: " + target.id);
@@ -95,7 +95,7 @@ function displayMenu(target) {
     } else {
         result.push("目前沒有anyone在進行DBD的動作")
     };
-    
+
     return result.join("\n");
 }
 
@@ -104,6 +104,40 @@ function displayMenus(targets) {
 }
 
 function displayOrder(billJSON) {
+    var orders = billJSON.orders;
+    var orderNames = [];
+    orders.forEach(function(order) {
+        if (orderNames.indexOf(order.food_name) === -1) {
+            orderNames.push(order.food_name);
+        };
+    });
+    var totalClassify = orderNames.
+    map(function(orderName) {
+        return {
+            orderName: orderName,
+            price: orders.reduce(function (prev, curr) {
+                return curr.food_name === orderName ? curr : prev;
+            }).price,
+            total: orders.filter(function(order) {
+                return order.food_name === orderName;
+            }).
+            map(function(matchedOrder) {
+                return parseInt(matchedOrder.price);
+            }).
+            filter(function(price) {
+                return isNaN(price) !== true;
+            }).
+            reduce(function(prev, curr) {
+                curr += prev
+                return curr;
+            }, 0)
+        }
+    }).
+    map(function (cObject) {
+        cObject.count = cObject.total/cObject.price
+        return cObject;
+    });
+    console.log(totalClassify);
     var result = [];
     result.push("```");
     if (billJSON.id) {
@@ -111,13 +145,21 @@ function displayOrder(billJSON) {
         result.push("訂餐DRI :" + billJSON.user.name);
         result.push("餐廳 : " + billJSON.restaurant_name);
         result.push("");
+        result.push("訂餐清單 :")
+        totalClassify.forEach(function (tc) {
+            var clStr = "";
+            clStr += tc.orderName +" "+tc.price+"元"+" * "+tc.count+ " = "+tc.total;
+            result.push(clStr);
+        })
+        result.push("");
+        result.push("明細 :");
         billJSON.orders.forEach(function(order) {
             var orderStr = ""
             orderStr += order.ordere_name + " ";
             orderStr += order.food_name + " ";
             orderStr += order.price + " ";
-            orderStr += order.has_paid ?  "已付款" : "尚未付款";
-            if (!order.has_paid) orderStr += " -> 找錢 "+order.change;
+            orderStr += order.has_paid ? "已付款" : "尚未付款";
+            if (!order.has_paid) orderStr += " -> 找錢 " + order.change;
             result.push(orderStr)
         })
         var total = billJSON.orders.
