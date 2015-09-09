@@ -19,11 +19,14 @@ module.exports = function(robot) {
             "`bill 帳單編號` : 查詢該筆編號的帳單資訊",
             "`bill` : 最新的帳單"
         ];
-    robot.respond(/^sudo info/i, function(res) {
+    robot.hear(/^sudo info/i, function(res) {
         res.send(commands.join("\n"));
     })    
     robot.respond(/info/i, function(res) {
         res.send(commands.join("\n"));
+    })
+    robot.hear(/^sudo url/i, function(res) {
+        res.send("DBD網頁版\n"+defaultURL);
     })
     robot.respond(/web/i, function (res) {
         res.send("DBD網頁版\n"+defaultURL);
