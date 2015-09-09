@@ -10,7 +10,7 @@ var janeWei = [
 
 
 module.exports = function(robot) {
-    robot.hear(/仁甫/i, function(res) {
+    robot.hear(/仁甫|自以為綺貞/i, function(res) {
         res.send(g8ask.sample() + janeWei.sample());
     })
     robot.respond(/slide/i, function(res) {
