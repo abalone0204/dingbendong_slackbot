@@ -9,42 +9,26 @@ Array.prototype.take = function(num) {
 };
 
 module.exports = function(robot) {
-    robot.hear(/sudo all bills/i, function(res) {
+    robot.hear(/sudo bills/i, function(res) {
         sendAllBills(robot, res);
     });
-    robot.respond(/all bills/i, function(res) {
+
+    robot.respond(/bills/i, function(res) {
         sendAllBills(robot, res);
     });
-    robot.hear(/show bill (\d+)/i, function(res) {
-        
-    });
-    robot.respond(/show bill (\d+)/i, function(res) {
+
+    robot.hear(/sudo bill[^s]* (\d+)/i, function(res) {
         sendShowBill(robot, res);
     });
-    robot.respond(/bill/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var latestMenuId = menusJSON.
-            filter(function(menu) {
-                return menu.expired === true;
-            }).
-            reduce(function(curr, acc) {
-                if (new Date(curr.raw_end_time) < new Date(acc.raw_end_time)) {
-                    return acc;
-                } else {
-                    return curr;
-                }
-            }).id;
-            // var result = displayBill(robot, latestMenuId);
-            // res.send(result);
-            var billJSONURL = defaultURL + "/menus/" + latestMenuId + "/bill.json"
 
-            robot.http(billJSONURL)
-                .get()(function(err, response, body) {
-                    var billJSON = JSON.parse(body)
-                    var result = displayOrder(billJSON)
-                    res.send(result);
-                });
-        });
+    robot.respond(/bill[^s]* (\d+)/i, function(res) {
+        sendShowBill(robot, res);
+    });
+    robot.hear(/sudo bill$/i, function(res) {
+        sendLatestBill(robot, res)
+    });
+    robot.respond(/bill[^s]*/i, function(res) {
+        sendLatestBill(robot, res)
     });
     robot.respond(/all menus/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
@@ -88,6 +72,30 @@ module.exports = function(robot) {
 }
 
 // Send MSG Functions
+function sendLatestBill(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var latestMenuId = menusJSON.
+        filter(function(menu) {
+            return menu.expired === true;
+        }).
+        reduce(function(curr, acc) {
+            if (new Date(curr.raw_end_time) < new Date(acc.raw_end_time)) {
+                return acc;
+            } else {
+                return curr;
+            }
+        }).id;
+        var billJSONURL = defaultURL + "/menus/" + latestMenuId + "/bill.json"
+
+        robot.http(billJSONURL)
+            .get()(function(err, response, body) {
+                var billJSON = JSON.parse(body)
+                var result = displayOrder(billJSON)
+                res.send(result);
+            });
+    });
+}
+
 function sendShowBill(robot, res) {
     updateJSON(robot, menusJSONURL, function() {
         var matchIndex = parseInt(res.match[1]);
