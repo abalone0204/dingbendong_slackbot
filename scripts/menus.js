@@ -30,48 +30,65 @@ module.exports = function(robot) {
     robot.respond(/bill[^s]*/i, function(res) {
         sendLatestBill(robot, res)
     });
-    robot.respond(/all menus/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var targets = menusJSON.
-            filter(function(menu) {
-                return menu.expired !== true;
-            })
-            var result = targets.
-            map(function(menu) {
-                return "訂單編號:" + menu.id + " " + menu.restaurant_name + " 還有" + menu.remain_time + "截止"
-            })
-            if (result.length === 0) {
-                result.push("目前沒有人DBD喔!");
-            };
-            res.send(result.join("\n"));
-        })
+    robot.hear(/sudo menus/i, function(res) {
+        sendMenus(robot, res);
     })
-
-    robot.respond(/menu/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var target = menusJSON.
-            filter(function(menu) {
-                return menu.expired !== true;
-            })[0];
-            var result = displayMenu(target);
-            res.send(result);
-        });
+    robot.respond(/menus/i, function(res) {
+        sendMenus(robot, res);
+    })
+    robot.hear(/^sudo menu$/i, function(res) {
+        sendLatestMenu(robot, res);
+    })
+    robot.respond(/^menu$/i, function(res) {
+        sendLatestMenu(robot, res);
     })
 
     robot.respond(/show menu (\d+)/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var menuID = parseInt(res.match[1]);
-            var target = menusJSON.
-            filter(function(menu) {
-                return menu.id === menuID;
-            })[0]
-            var result = displayMenu(target);
-            res.send(result);
-        })
+        sendMenu(robot, res);
     })
 }
 
 // Send MSG Functions
+function sendMenu(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var menuID = parseInt(res.match[1]);
+        var target = menusJSON.
+        filter(function(menu) {
+            return menu.id === menuID;
+        })[0]
+        var result = displayMenu(target);
+        res.send(result);
+    })
+}
+
+function sendLatestMenu(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var target = menusJSON.
+        filter(function(menu) {
+            return menu.expired !== true;
+        })[0];
+        var result = displayMenu(target);
+        res.send(result);
+    });
+}
+
+function sendMenus(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var targets = menusJSON.
+        filter(function(menu) {
+            return menu.expired !== true;
+        })
+        var result = targets.
+        map(function(menu) {
+            return "訂單編號:" + menu.id + " " + menu.restaurant_name + " 還有" + menu.remain_time + "截止"
+        })
+        if (result.length === 0) {
+            result.push("目前沒有人DBD喔!");
+        };
+        res.send(result.join("\n"));
+    })
+}
+
 function sendLatestBill(robot, res) {
     updateJSON(robot, menusJSONURL, function() {
         var latestMenuId = menusJSON.
