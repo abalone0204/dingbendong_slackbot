@@ -4,7 +4,26 @@ var menusJSONURL = defaultURL + "/menus.json";
 
 var menusJSON;
 
+Array.prototype.take = function(num) {
+    return this.splice(0, num);
+};
+
 module.exports = function(robot) {
+    robot.respond(/all bills/i, function(res) {
+        updateJSON(robot, menusJSONURL, function() {
+            var result = [];
+            var recentBills = menusJSON.
+            filter(function(menu) {
+                return menu.expired === true;
+            }).reverse().take(5);
+            console.log(recentBills);
+            recentBills.
+            forEach(function(recentBill) {
+                result.push("編號: "+recentBill.id + recentBill.restaurant_name+ " 已經結束: "+recentBill.remain_time.replace("-",""))
+            });
+            res.send(result.join("\n"));
+        });
+    });
     robot.respond(/bill/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
             var latestMenuId = menusJSON.
@@ -115,10 +134,10 @@ function displayOrder(billJSON) {
     map(function(orderName) {
         return {
             orderName: orderName,
-            count: orders.filter(function (order) {
+            count: orders.filter(function(order) {
                 return order.food_name === orderName;
             }).length,
-            price: orders.reduce(function (prev, curr) {
+            price: orders.reduce(function(prev, curr) {
                 return curr.food_name === orderName ? curr : prev;
             }).price,
             total: orders.filter(function(order) {
@@ -145,19 +164,20 @@ function displayOrder(billJSON) {
         result.push("餐廳 : " + billJSON.restaurant_name);
         result.push("");
         result.push("訂餐清單 :")
-        totalClassify.forEach(function (tc) {
+        totalClassify.forEach(function(tc) {
             var clStr = "";
-            clStr += tc.orderName +" "+tc.price+"元"+" * "+tc.count+ " = "+tc.total;
+            clStr += tc.orderName + " " + tc.price + "元" + " * " + tc.count + " = " + tc.total;
             result.push(clStr);
         })
         result.push("");
         result.push("明細 :");
-        billJSON.orders.forEach(function(order) {
+        billJSON.orders.
+        forEach(function(order) {
             var orderStr = ""
             orderStr += order.ordere_name + " ";
             orderStr += order.food_name + " ";
-            orderStr += order.price + " ";
-            orderStr += order.note+ " ";
+            orderStr += "$" + order.price + " ";
+            if (order.note !== "") orderStr += "[備註: " + order.note + "] ";
             orderStr += order.has_paid ? "已付款" : "尚未付款";
             if (!order.has_paid) orderStr += " -> 找錢 " + order.change;
             result.push(orderStr)
@@ -187,6 +207,8 @@ function displayOrder(billJSON) {
     } else {
         result.push("目前沒有點菜單需要結帳")
     };
+    result.push("防呆小提醒: ");
+    result.push("如果這不是你要找的訂單，\n請對我輸入 all bills (或者是 @dbder: all bills)\n找到你想查詢的編號以後，再輸入 show bill 帳單編號 \n來看目前有哪些帳單");
     result.push("```");
     return result.join("\n");
 }
