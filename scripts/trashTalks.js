@@ -1,9 +1,19 @@
-var janeWei = ["http://i.imgur.com/06zDBEN.jpg?1"]
+Array.prototype.sample = function() {
+    return this[Math.floor(Math.random() * this.length)];
+}
+
+var g8ask = ["我想你指的是 ", "你是指: "];
+var janeWei = [
+    "https://www.filepicker.io/api/file/8B9mCgWORoBMUG6XVyLd",
+    "https://www.filepicker.io/api/file/6UAjE7SSmKUKjgMDsCkQ"
+];
+
+
 module.exports = function(robot) {
-    robot.hear(/仁甫/i, function (res) {
-        res.send("你是指?: "+janeWei[0]);
+    robot.hear(/仁甫/i, function(res) {
+        res.send(g8ask.sample() + janeWei.sample());
     })
-    robot.respond(/slide/i, function  (res) {
+    robot.respond(/slide/i, function(res) {
         res.send("http://www.slideshare.net/dennyku1/sdbd-52472582");
     })
     robot.hear(/shit/i, function(res) {
