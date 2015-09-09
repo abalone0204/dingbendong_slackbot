@@ -1,6 +1,7 @@
+var janeWei = ["http://i.imgur.com/06zDBEN.jpg?1"]
 module.exports = function(robot) {
     robot.hear(/仁甫/i, function (res) {
-        res.send("你是指?: http://imgur.com/06zDBEN");
+        res.send("你是指?: "+janeWei[0]);
     })
     robot.respond(/slide/i, function  (res) {
         res.send("http://www.slideshare.net/dennyku1/sdbd-52472582");
