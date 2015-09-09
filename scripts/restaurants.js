@@ -9,46 +9,62 @@ module.exports = function(robot) {
         sendFoods(robot, res);
     });
 
-    function sendFoods(robot, res) {
-        updateJSON(robot, restaurantsJSONURL, function() {
-            var result = ""
-            restaurantsJSON.forEach(function(food, i) {
-                result += (i + 1) + ". " + food.name + "\n";
-            })
-            res.send(result);
-        })
-    }
     robot.respond(/foods/i, function(res) {
         sendFoods(robot, res);
-
     });
-    robot.respond(/show food (\d+)$/i, function(res) {
-        updateJSON(robot, restaurantsJSONURL, function() {
-            var restIndex = res.match[1] - 1;
-            var target = restaurantsJSON[restIndex]
-            var result = displayRestaurant(target);
-            res.send(result);
+    robot.hear(/sudo food[^s]* (\d+)/i, function(res) {
+        sendFood(robot, res);
+    })
+    robot.respond(/food[^s]* (\d+)$/i, function(res) {
+        sendFood(robot, res);
+    });
+
+    robot.hear(/sudo food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
+        sendFood(robot, res);
+    })
+    robot.respond(/food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
+        sendFood(robot, res);
+    })
+
+}
+
+
+// Send MSG
+
+function sendFoods(robot, res) {
+    updateJSON(robot, restaurantsJSONURL, function() {
+        var result = ""
+        restaurantsJSON.forEach(function(food, i) {
+            result += (i + 1) + ". " + food.name + "\n";
         })
+        res.send(result);
+    })
+}
 
-    });
-    robot.respond(/show food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
-        updateJSON(robot, restaurantsJSONURL, function() {
-            var result = "";
-            var searchText = res.match[1];
+function sendFood(robot, res) {
+    updateJSON(robot, restaurantsJSONURL, function() {
+        var mathcer = res.match[1];
+        var result = "";
+        if (mathcer.match(/\d+/) === null) {
             var matchedRestaurants = restaurantsJSON.filter(function(restaurant) {
-                return restaurant.name.match(searchText) !== null;
+                return restaurant.name.match(matcher) !== null;
             });
             if (matchedRestaurants.length > 1) {
                 result = multipleRestaurants(matchedRestaurants);
             } else {
                 result = displayRestaurant(matchedRestaurants[0])
             };
-            res.send(result);
-        })
+        } else {
+            var restIndex = mathcer - 1;    
+            var target = restaurantsJSON[restIndex]
+        };
+        
+        
+        var result = displayRestaurant(target);
+        res.send(result);
     })
-
 }
-
+// Update Functions
 function updateJSON(robot, url, callback) {
     robot.http(url)
         .get()(function(err, res, body) {
