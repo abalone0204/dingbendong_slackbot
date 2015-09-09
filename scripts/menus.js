@@ -224,7 +224,7 @@ function displayOrder(billJSON) {
         result.push("目前沒有點菜單需要結帳")
     };
     result.push("防呆小提醒: ");
-    result.push("如果這不是你要找的訂單，\n請對我輸入 all bills (或者是在你所在地channel中輸入 @dbder: all bills)\n找到你想查詢的編號以後，再輸入 show bill 帳單編號 \n來看目前有哪些帳單");
+    result.push("如果這不是你要找的訂單，\n請對我輸入 all bills \n(或者是在你所在地channel中輸入 @dbder: all bills)\n找到你想查詢的編號以後，再輸入 show bill 帳單編號 \n來看目前有哪些帳單");
     result.push("```");
     return result.join("\n");
 }
