@@ -5,21 +5,21 @@ module.exports = function(robot) {
     robot.respond(/resurl/i, function(res) {
         res.send(restaurantsJSONURL);
     });
-    robot.hear(/sudo foods/i, function(res) {
+    robot.hear(/^sudo foods/i, function(res) {
         sendFoods(robot, res);
     });
 
     robot.respond(/foods/i, function(res) {
         sendFoods(robot, res);
     });
-    robot.hear(/sudo food[^s]* (\d+)/i, function(res) {
+    robot.hear(/^sudo food[^s]* (\d+)/i, function(res) {
         sendFood(robot, res);
     })
     robot.respond(/food[^s]* (\d+)$/i, function(res) {
         sendFood(robot, res);
     });
 
-    robot.hear(/sudo food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
+    robot.hear(/^sudo food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {
         sendFood(robot, res);
     })
     robot.respond(/food (\d{0,}[\WA-Za-z]+\d{0,})/i, function(res) {

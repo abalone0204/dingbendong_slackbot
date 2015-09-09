@@ -9,7 +9,7 @@ Array.prototype.take = function(num) {
 };
 
 module.exports = function(robot) {
-    robot.hear(/sudo bills/i, function(res) {
+    robot.hear(/^sudo bills/i, function(res) {
         sendAllBills(robot, res);
     });
 
@@ -17,20 +17,20 @@ module.exports = function(robot) {
         sendAllBills(robot, res);
     });
 
-    robot.hear(/sudo bill[^s]* (\d+)/i, function(res) {
+    robot.hear(/^sudo bill[^s]* (\d+)/i, function(res) {
         sendShowBill(robot, res);
     });
 
     robot.respond(/bill[^s]* (\d+)/i, function(res) {
         sendShowBill(robot, res);
     });
-    robot.hear(/sudo bill$/i, function(res) {
+    robot.hear(/^sudo bill$/i, function(res) {
         sendLatestBill(robot, res)
     });
     robot.respond(/bill[^s]*/i, function(res) {
         sendLatestBill(robot, res)
     });
-    robot.hear(/sudo menus/i, function(res) {
+    robot.hear(/^sudo menus/i, function(res) {
         sendMenus(robot, res);
     })
     robot.respond(/menus/i, function(res) {
@@ -42,8 +42,10 @@ module.exports = function(robot) {
     robot.respond(/^menu$/i, function(res) {
         sendLatestMenu(robot, res);
     })
-
-    robot.respond(/show menu (\d+)/i, function(res) {
+    robot.hear(/^sudo menu (\d+)/i, function(res) {
+        sendMenu(robot, res);
+    })
+    robot.respond(/menu (\d+)/i, function(res) {
         sendMenu(robot, res);
     })
 }
