@@ -13,10 +13,10 @@ module.exports = function(robot) {
             "`foods`: 列出所有餐廳名稱及稱號",
             "`food 編號or名稱` : 列出餐廳資訊",
             "`menu` : 看最近的點餐",
-            "`all menus` : 看目前有的點餐",
-            "`show menu 編號` : 查看編號的menu資訊",
-            "`all bills` :  查詢最近5筆帳單",
-            "`show bill 帳單編號` : 查詢該筆編號的帳單資訊",
+            "`menus` : 看目前有的點餐",
+            "`menu 編號` : 查看編號的menu資訊",
+            "`bills` :  查詢最近5筆帳單",
+            "`bill 帳單編號` : 查詢該筆編號的帳單資訊",
             "`bill` : 最新的帳單"
         ];
     robot.respond(/info/i, function(res) {

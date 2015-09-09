@@ -138,7 +138,7 @@ function sendAllBills(robot, res) {
         console.log(recentBills);
         recentBills.
         forEach(function(recentBill) {
-            result.push("編號: " + recentBill.id + recentBill.restaurant_name + " 已經結束: " + recentBill.remain_time.replace("-", ""))
+            result.push("編號: " + recentBill.id + " "+recentBill.restaurant_name + " 已經結束: " + recentBill.remain_time.replace("-", ""))
         });
         res.send(result.join("\n"));
     });
