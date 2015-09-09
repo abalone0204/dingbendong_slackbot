@@ -131,13 +131,6 @@ function displayMenu(target) {
     return result.join("\n");
 }
 
-function displayMenus(targets) {
-
-}
-
-function displayBill (billId) {
-    
-}
 
 function displayOrder(billJSON) {
     var orders = billJSON.orders;
@@ -178,6 +171,7 @@ function displayOrder(billJSON) {
         result.push("訂單編號 : " + billJSON.id);
         result.push("訂餐DRI :" + billJSON.user.name);
         result.push("餐廳 : " + billJSON.restaurant_name);
+        result.push("餐廳電話 : "+billJSON.restaurant_phone_number);
         result.push("");
         result.push("訂餐清單 :")
         totalClassify.forEach(function(tc) {
