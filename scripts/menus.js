@@ -9,33 +9,17 @@ Array.prototype.take = function(num) {
 };
 
 module.exports = function(robot) {
+    robot.hear(/sudo all bills/i, function(res) {
+        sendAllBills(robot, res);
+    });
     robot.respond(/all bills/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var result = [];
-            var recentBills = menusJSON.
-            filter(function(menu) {
-                return menu.expired === true;
-            }).reverse().take(5);
-            console.log(recentBills);
-            recentBills.
-            forEach(function(recentBill) {
-                result.push("編號: "+recentBill.id + recentBill.restaurant_name+ " 已經結束: "+recentBill.remain_time.replace("-",""))
-            });
-            res.send(result.join("\n"));
-        });
+        sendAllBills(robot, res);
+    });
+    robot.hear(/show bill (\d+)/i, function(res) {
+        
     });
     robot.respond(/show bill (\d+)/i, function(res) {
-        updateJSON(robot, menusJSONURL, function() {
-            var matchIndex = parseInt(res.match[1]);            
-            var billJSONURL = defaultURL + "/menus/" + matchIndex + "/bill.json"
-            robot.http(billJSONURL)
-                .get()(function(err, response, body) {
-                    var billJSON = JSON.parse(body)
-                    var result = displayOrder(billJSON)
-                    res.send(result);
-                });
-        });
-
+        sendShowBill(robot, res);
     });
     robot.respond(/bill/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
@@ -103,7 +87,38 @@ module.exports = function(robot) {
     })
 }
 
+// Send MSG Functions
+function sendShowBill(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var matchIndex = parseInt(res.match[1]);
+        var billJSONURL = defaultURL + "/menus/" + matchIndex + "/bill.json"
+        robot.http(billJSONURL)
+            .get()(function(err, response, body) {
+                var billJSON = JSON.parse(body)
+                var result = displayOrder(billJSON)
+                res.send(result);
+            });
+    });
+}
 
+function sendAllBills(robot, res) {
+    updateJSON(robot, menusJSONURL, function() {
+        var result = [];
+        var recentBills = menusJSON.
+        filter(function(menu) {
+            return menu.expired === true;
+        }).reverse().take(5);
+        console.log(recentBills);
+        recentBills.
+        forEach(function(recentBill) {
+            result.push("編號: " + recentBill.id + recentBill.restaurant_name + " 已經結束: " + recentBill.remain_time.replace("-", ""))
+        });
+        res.send(result.join("\n"));
+    });
+}
+
+
+// Update JSON functions
 function updateJSON(robot, url, callback) {
     robot.http(url)
         .get()(function(err, res, body) {
@@ -171,7 +186,7 @@ function displayOrder(billJSON) {
         result.push("訂單編號 : " + billJSON.id);
         result.push("訂餐DRI :" + billJSON.user.name);
         result.push("餐廳 : " + billJSON.restaurant_name);
-        result.push("餐廳電話 : "+billJSON.restaurant_phone_number);
+        result.push("餐廳電話 : " + billJSON.restaurant_phone_number);
         result.push("");
         result.push("訂餐清單 :")
         totalClassify.forEach(function(tc) {

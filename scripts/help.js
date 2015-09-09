@@ -2,8 +2,11 @@ var defaultURL = process.env.URL || "http://localhost:3000/";
 module.exports = function(robot) {
     var commands = [
             "dbder用法：",
+            "`sudo 指令` : 不用tag",
             "`@dbder 指令` : 使喚DBD兒就是這麼簡單",
-            "example: `@dbder foods`",
+            "example: ",
+            "`  1. @dbder foods`",
+            "`  2. sudo foods`",
             "",
             "指令一覽表:",
             "`web` : 網頁版網址",
