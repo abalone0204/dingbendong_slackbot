@@ -5,8 +5,11 @@ module.exports = function(robot) {
     robot.respond(/resurl/i, function(res) {
         res.send(restaurantsJSONURL);
     });
+    robot.hear(/sudo foods/i, function(res) {
+        sendFoods(robot, res);
+    });
 
-    robot.respond(/foods/i, function(res) {
+    function sendFoods(robot, res) {
         updateJSON(robot, restaurantsJSONURL, function() {
             var result = ""
             restaurantsJSON.forEach(function(food, i) {
@@ -14,6 +17,9 @@ module.exports = function(robot) {
             })
             res.send(result);
         })
+    }
+    robot.respond(/foods/i, function(res) {
+        sendFoods(robot, res);
 
     });
     robot.respond(/show food (\d+)$/i, function(res) {
