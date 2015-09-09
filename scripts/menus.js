@@ -24,6 +24,19 @@ module.exports = function(robot) {
             res.send(result.join("\n"));
         });
     });
+    robot.respond(/show bill (\d+)/i, function(res) {
+        updateJSON(robot, menusJSONURL, function() {
+            var matchIndex = parseInt(res.match[1]);            
+            var billJSONURL = defaultURL + "/menus/" + matchIndex + "/bill.json"
+            robot.http(billJSONURL)
+                .get()(function(err, response, body) {
+                    var billJSON = JSON.parse(body)
+                    var result = displayOrder(billJSON)
+                    res.send(result);
+                });
+        });
+
+    });
     robot.respond(/bill/i, function(res) {
         updateJSON(robot, menusJSONURL, function() {
             var latestMenuId = menusJSON.
@@ -37,7 +50,8 @@ module.exports = function(robot) {
                     return curr;
                 }
             }).id;
-
+            // var result = displayBill(robot, latestMenuId);
+            // res.send(result);
             var billJSONURL = defaultURL + "/menus/" + latestMenuId + "/bill.json"
 
             robot.http(billJSONURL)
@@ -46,7 +60,6 @@ module.exports = function(robot) {
                     var result = displayOrder(billJSON)
                     res.send(result);
                 });
-
         });
     });
     robot.respond(/all menus/i, function(res) {
@@ -122,6 +135,10 @@ function displayMenus(targets) {
 
 }
 
+function displayBill (billId) {
+    
+}
+
 function displayOrder(billJSON) {
     var orders = billJSON.orders;
     var orderNames = [];
@@ -155,7 +172,6 @@ function displayOrder(billJSON) {
             }, 0)
         }
     })
-    console.log(totalClassify);
     var result = [];
     result.push("```");
     if (billJSON.id) {
@@ -208,7 +224,7 @@ function displayOrder(billJSON) {
         result.push("目前沒有點菜單需要結帳")
     };
     result.push("防呆小提醒: ");
-    result.push("如果這不是你要找的訂單，\n請對我輸入 all bills (或者是 @dbder: all bills)\n找到你想查詢的編號以後，再輸入 show bill 帳單編號 \n來看目前有哪些帳單");
+    result.push("如果這不是你要找的訂單，\n請對我輸入 all bills (或者是在你所在地channel中輸入 @dbder: all bills)\n找到你想查詢的編號以後，再輸入 show bill 帳單編號 \n來看目前有哪些帳單");
     result.push("```");
     return result.join("\n");
 }
