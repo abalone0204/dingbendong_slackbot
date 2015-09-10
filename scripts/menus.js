@@ -39,7 +39,7 @@ module.exports = function(robot) {
     robot.hear(/^sudo menu$/i, function(res) {
         sendLatestMenu(robot, res);
     })
-    robot.respond(/^menu$/i, function(res) {
+    robot.respond(/menu[^s]*/i, function(res) {
         sendLatestMenu(robot, res);
     })
     robot.hear(/^sudo menu (\d+)/i, function(res) {

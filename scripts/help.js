@@ -28,6 +28,9 @@ module.exports = function(robot) {
     robot.hear(/^sudo url/i, function(res) {
         res.send("DBD網頁版\n"+defaultURL);
     })
+    robot.hear(/^sudo web/i, function (res) {
+        res.send("DBD網頁版\n"+defaultURL);
+    })
     robot.respond(/web/i, function (res) {
         res.send("DBD網頁版\n"+defaultURL);
     })
